@@ -11,7 +11,7 @@ public class consultas {
     private String usuario = "u2zpxdffk3kcllvk";
     private String password = "U9SFsyDkNq9N9oxI5VrW";
     
-    public Connection conectar() throws SQLException {
+    public Connection getConexion() {
         try {
             cx = DriverManager.getConnection(url, usuario, password);
             System.out.println("Se conecto a la base de datos.");
@@ -26,96 +26,171 @@ public class consultas {
     public List<String> obtener(ninja ninjas) {
         String sql = "select n.*, h.nombre, h.descripcion from ninja n inner join habilidades h on n.id_ninja = h.id_ninja";
         List<String> listaNinja = new ArrayList<>();
-        try (Connection conexionInterna = conectar();
-                PreparedStatement solicitud = conexionInterna.prepareStatement(sql);
-                ResultSet resultado = solicitud.executeQuery();){
-            while(resultado.next()) {
-                listaNinja.add(resultado.getInt("id_ninja") + " - "
-                + resultado.getString("nombre") + " - "
-                + resultado.getString("rango") + " - " 
-                + resultado.getString("aldea"));
+        try {
+            Connection cx = getConexion();
+            System.out.println(cx);
+            PreparedStatement ps = cx.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                listaNinja.add("id_ninja" + rs.getInt("id_ninja")
+                + "\nNombre: " + rs.getString("nombre") + 
+                        "\nRango: " + rs.getString("rango") + 
+                        "\nAldea: " + rs.getString("aldea")
+                + "\nhabilidades: " + rs.getString("descripcion"));
             }
         }
         catch (SQLException e) {
-            System.out.println("Error al leer los datos");
             e.printStackTrace();
         }
         return listaNinja;
     }
     
-    /*Buscar mision con el ninja*/
-    public void buscar(mision mis) {
-        String sql = "select m.id_mision, n.id_ninja, n.nombre from mision m inner join ninja n on n.id_ninja where id_mision=?";
-        List<String> misionesD = new ArrayList<>();
-        try (   Connection conexionInterna = conectar();
-                PreparedStatement solicitud = conexionInterna.prepareStatement(sql);
-                ResultSet resultado = solicitud.executeQuery()){
-            while (resultado.next()) {
-                int id = resultado.getInt("id");
-                System.out.println("id: " + mis.getId_mision());
+    /*misiones disponibles*/
+    public List<String> misionesd(misionD md) {
+        String sql = "select n.*, mn.id_mision_ninja, mn.fecha_inicio, mn.fecha_fin, m.* from misionNinja mn" +
+"                    inner join mision m on m.id_mision = mn.id_mision" +
+"                    inner join ninja n on n.id_ninja = mn.id_ninja" +
+"                    where mn.fecha_fin > current_date() and n.id_ninja = ?";
+        List<String> listaM = new ArrayList<>();
+        try {
+            Connection cx = getConexion();
+            System.out.println(cx);
+            PreparedStatement ps = cx.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                listaM.add("id_ninja: " + rs.getInt("id_ninja") +
+                        "/nNombre: " + rs.getString("nombre") + 
+                        "/nRango: " + rs.getString("rango") + 
+                        "/nAldea: " + rs.getString("aldea") + 
+                        "/nId_mision: " + rs.getInt("id_mision") + 
+                        "/nDescripcion: " + rs.getString("descripcion") + 
+                        "/nRango de la aldea: " + rs.getString("rango") + 
+                        "/nRecompensa: " + rs.getString("recompensa") + 
+                        "/nFecha de inicio: " + rs.getString("fecha_inicio") + 
+                        "/nFecha de finalizacion: " + rs.getString("fecha_fin"));
             }
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
+        return listaM;
     }
     
     /*mision completa por ninja*/
-    public void buscra(misionNinja misi) {
-        String sql = "select m.*, n.id_ninja, n.nombre from misionNinja m inner join ninja n on m.id_misionN where id_ninja=?";
-        try (   Connection conexionInterna = conectar();
-                PreparedStatement solicitud = conexionInterna.prepareStatement(sql);
-                ResultSet resultado = solicitud.executeQuery()){
-            while (resultado.next()) {
-                int id = resultado.getInt("id");
-                System.out.println("id: " + misi.getId_misionN());
-                String fechaI = resultado.getString("fecha inicio");
-                System.out.println("fecha inicio" + misi.getFechaI());
-                String fechaF = resultado.getString("fecga finalizacion");
-                System.out.println("fecha finalizacion" + misi.getFechaF());
+    public List<String> misioncom(misionD md) {
+        String sql = "select n.*, mn.id_mision_ninja, mn.fecha_inicio, mn.fecha_fin, m.* from misionNinja mn" +
+"                    inner join nision m on m.id_mision = mn.id_mision" +
+"                    inner join ninja n on n.id_ninja = mn.id_ninja" +
+"                    where mn.fecha_fin < current_date() and n.id_ninja = ?";
+        List<String> listamisi = new ArrayList<>();
+        try {
+            Connection cx = getConexion();
+            System.out.println(cx);
+            PreparedStatement ps = cx.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                listamisi.add("id_ninja: " + rs.getInt("id_ninja") + 
+                        "/nNombre: " + rs.getString("nombre") + 
+                        "/nAldea: " + rs.getString("aldea") + 
+                        "/nId de la mision: " + rs.getInt("id_mision") + 
+                        "/nDescripcion: " + rs.getString("descripcion") + 
+                        "/nRango de la aldea: " + rs.getString("rango") + 
+                        "/nRecompensa: " + rs.getString("recompensa") + 
+                        "/nFecha de inicio: " + rs.getString("fecha_inicio") + 
+                        "/nFecha de finalizacion: " + rs.getString("fecha_fin"));
             }
-        }
-        catch(SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    /*agregar mision*/
-    public void agregar(mision mi) {
-        String sql = "insert into mision(descripcion, rango, recompensa) values (?, ?, ?)";
-        try (   Connection conexionInterna = conectar();
-                PreparedStatement solicitud = conexionInterna.prepareStatement(sql)) {
-            
-            solicitud.setString(1, mi.getDescripcion());
-            solicitud.setString(2, mi.getRango());
-            solicitud.setString(3, mi.getRecompensa());
-            
-            solicitud.executeUpdate();
-            System.out.println("Mision agregada con exito");
         }
         catch (SQLException e) {
             e.printStackTrace();
+        }
+        return listamisi;
+    }
+    
+    /*asignar mision*/
+    public boolean asignarM(mision m) {
+        PreparedStatement ps = null;
+        Connection cx = getConexion();
+        
+        String sql = "insert into misionNinja (fecha_inicio, id_ninja, id_mision) values (?,?,?";
+        
+        try{
+            ps = cx.prepareStatement(sql);
+            ps.setString(1, m.getFechaI());
+            ps.setInt(2, m.getId_ninja());
+            ps.setInt(3, m.getId_mision());
+            ps.execute();
+            return true;
+        }
+        catch(SQLException e){
+            System.err.println(e);
+            return false;
+        }
+        finally{
+            try{
+                cx.close();
+            }
+            catch(SQLException e){
+                System.err.println(e);
+            }
         }
     }
     
+    
     /*marcar como completa*/
-    public void marcar(misionNinja Mis) {
-        String sql = "update misionNinja set fechaF=? where id_misionN=?";
-        try (   Connection conexionInterna = conectar();
-                PreparedStatement solicitud = conexionInterna.prepareStatement(sql)) {
-            
-            solicitud.setString(1, Mis.getFechaF());
-            solicitud.setInt(2, Mis.getId_misionN());
-            
-            int filas = solicitud.executeUpdate();
-            if (filas > 0) {
-                System.out.println("Mision completada con exito");
+    public boolean marcarCo(misionC m) {
+        PreparedStatement ps = null;
+        Connection cx = getConexion();
+        
+        String sql = "update misionNinja set fecha_fin=?, where id_misionN=?";
+        
+        try {
+            ps = cx.prepareStatement(sql);
+            ps.setString(1, m.getFechaFin());
+            ps.setInt(2, m.getId_mision_ninja());
+            ps.execute();
+            return true;
+        }
+        catch (SQLException e) {
+            System.err.println(e);
+            return false;
+        }
+        finally {
+            try {
+                cx.close();
             }
-            else {
-                System.out.println("No has terminado la mison" + Mis.getFechaF());
+            catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+    }
+    
+    /*Ver misones completas*/
+    public List<String> misionesCom(misionNinja mn) {
+        String sql = "select n.*, mn.id_mision_ninja, mn.fecha_inicio, mn.fecha_fin, m.* from misionNinja mn" +
+"                    inner join mision m on m.id_mision = mn.id_mision" +
+"                    inner join ninja n on n.id_ninja = mn.id_ninja" +
+"                    where mn.fecha_fin < current_date()";
+        List<String> listaC = new ArrayList<>();
+        try {
+            Connection cx = getConexion();
+            System.out.println(cx);
+            PreparedStatement ps = cx.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                listaC.add("id_ninja: " + rs.getInt("id_ninja") + 
+                        "/nNombre: " + rs.getString("nombre") + 
+                        "/nAldea: " + rs.getString("aldea") + 
+                        "/nId de la mision: " + rs.getInt("id_mision") + 
+                        "/nDescripcion: " + rs.getString("descripcion") + 
+                        "/nRango de la aldea: " + rs.getString("rango") + 
+                        "/nRecompensa: " + rs.getString("recompensa") + 
+                        "/nFecha de inicio: " + rs.getString("fecha_inicio") + 
+                        "/nFecha de finalizacion: " + rs.getString("fecha_fin"));
             }
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
+        return listaC;
     }
 }

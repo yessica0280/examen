@@ -9,10 +9,9 @@ import java.sql.*;
 public class Examen {
 
     public static void main(String[] args) {
-        ninja Nin = new ninja();
-        Vista vistas = new Vista();
-        consultas Consulta = new consultas();
-        controlador Controlador = new controlador(Consulta, vistas);
+        consultas Consultas = new consultas();
+        Vista vista = new Vista();
+        controlador Controlador = new controlador(Consultas, vista);
         Controlador.iniciar();
     }
     

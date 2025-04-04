@@ -2,6 +2,9 @@ package vista;
 
 import java.util.List;
 import java.util.Scanner;
+import modelo.mision;
+import modelo.misionC;
+import modelo.misionD;
 import modelo.misionNinja;
 import modelo.ninja;
 
@@ -15,35 +18,42 @@ public class Vista {
         }
     }
     
-    public misionNinja agregarM() {
-        System.out.println("Ingresa los datos para la nueva mision del ninja: ");
-        System.out.println("Id ninja: ");
+    public misionD misionD() {
+        System.out.println("Ingresa el id del ninja: ");
         int id = scan.nextInt();
+        return new misionD(id);
+    }
+    
+    public misionD misionC() {
+        System.out.println("Ingresa el id: ");
+        int id = scan.nextInt();
+        return new misionD(id);
+    }
+    
+    public mision misionA() {
+        System.out.println("Ingresar los datos: ");
         System.out.println("fecha de inicio: ");
         String fechaI = scan.nextLine();
-        return new misionNinja(id, fechaI);
+        System.out.println("id del ninja: ");
+        int idn = scan.nextInt();
+        System.out.println("id de la mision: ");
+        int idm = scan.nextInt();
+        return new mision(fechaI, idn, idm);
     }
     
-    public void mostrarN(List<misionNinja> misionn) {
-        System.out.println("Lista de las misiones que tiene el ninja: ");
-        for (misionNinja m : misionn) {
+    public misionNinja misiomCom() {/**/
+        System.out.println("id: ");
+        int ides = scan.nextInt();
+        System.out.println("fecha de finalizacion: ");
+        scan.nextLine();
+        String fechaF = scan.nextLine();
+        return new misionNinja(ides, fechaF);
+    }
+    
+    public void misionC(List<misionC> mc) {
+        System.out.println("lista de ninjas: ");
+        for (misionC m : mc) {
             System.out.println(m);
-        }
-    }
-    
-    public misionNinja actualizar() {
-        System.out.println("los nuevos datos: ");
-        System.out.println("Id: ");
-        int id = scan.nextInt();
-        System.out.println("fecha finalizacion: ");
-        String fechaf = scan.nextLine();
-        return new misionNinja(id, fechaf);
-    }
-    
-    public void ver(List<misionNinja> misiones) {
-        System.out.println("Lista de las misiones completadas por el ninja: ");
-        for (misionNinja mi : misiones) {
-            System.out.println(mi);
         }
     }
 }

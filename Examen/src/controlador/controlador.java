@@ -4,20 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import modelo.consultas;
-import modelo.habilidades;
 import modelo.mision;
+import modelo.misionC;
+import modelo.misionD;
 import modelo.misionNinja;
 import modelo.ninja;
 import vista.Vista;
 
 public class controlador {
-    private consultas Consultas;
-    private Vista vista;
-    private Scanner scan;
-    private ninja ninjas;
-    private mision msiones;
-    private misionNinja misionN;
-    private habilidades Habilidades;
+    consultas Consultas;
+    Vista vista;
+    Scanner scan;
+    ninja ninjas;
+    misionC misionc;
     
     public controlador(consultas Consultas, Vista vista){
         this.Consultas = Consultas;
@@ -41,33 +40,54 @@ public class controlador {
                 case 1:
                     List<String> listaNinja = new ArrayList<>();
                     listaNinja = Consultas.obtener(ninjas);
-                    ninja ninjas = new ninja();
-                    ninjas.obtener();
+                    for (String tin : listaNinja) {
+                        System.out.println(tin);
+                    }
                     break;
                     
                 case 2:
                     List<String> listaMisionN = new ArrayList<>();
-                    misionesD md = vista.mostrarN();
-                    listaMisionN = Consultas.buscar(md);
+                    misionD md = vista.misionD();
+                    listaMisionN = Consultas.misionesd(md);
+                    if (listaMisionN.size() > 0) {
+                        for (String Tin : listaMisionN) {
+                            System.out.println(Tin);
+                        }
+                        System.out.println("misiones disponibles");
+                    }
                     break;
-                    
                 case 3: 
-                    misionNinja miso = new misionNinja();
-                    miso.buscra();
+                    List<String> listaC = new ArrayList<>();
+                    misionD Md = vista.misionD();
+                    listaC = Consultas.misioncom(Md);
+                    if (listaC.size() > 0) {
+                        for (String Tin : listaC) {
+                            System.out.println(Tin);
+                        }
+                        System.out.println("misiones completadas");
+                    }
                     break;
                     
                 case 4:
+                    mision misiones = vista.misionA();
+                    Consultas.asignarM(misiones);
+                    System.out.println("mision asignada con exito");
                     break;
                     
                 case 5:
-                    /*mision miss = new mision();
-                    miss.buscar();
-                    break;
-                case 6:
-                    misionNinja misioN = vista.agregarM();
-                    consultas.agregar(misioN);
-                    System.out.println(misionN);
+                    /*misionC mc = vista.misiomCom();
+                    Consultas.marcarCo(mc);
+                    System.out.println("mision completa");
                     break;*/
+                    
+                case 6:
+                    List<String> listaCom = new ArrayList<>();
+                    /*listaCom = Consultas.misionesCom(mn);*/
+                    for (String Tin : listaCom) {
+                        System.out.println(Tin);
+                    }
+                    System.out.println("Lista de las misiones completas");
+                    break;
                     
                 case 7:
                     System.out.println("Saliendo...");
